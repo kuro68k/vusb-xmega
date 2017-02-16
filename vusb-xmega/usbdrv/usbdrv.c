@@ -22,7 +22,8 @@ documentation of the entire driver.
 uchar usbRxBuf[2*USB_BUFSIZE];  /* raw RX buffer: PID, 8 bytes data, 2 bytes CRC */
 uchar       usbInputBufOffset;  /* offset in usbRxBuf used for low level receiving */
 uchar       usbDeviceAddr;      /* assigned during enumeration, defaults to 0 */
-uchar       usbNewDeviceAddr;   /* device ID which should be set after status phase */
+//uchar       usbNewDeviceAddr;   /* device ID which should be set after status phase */
+#define usbNewDeviceAddr	GPIO0
 uchar       usbConfiguration;   /* currently selected configuration. Administered by driver, but not used */
 volatile schar usbRxLen;        /* = 0; number of bytes in usbRxBuf; 0 means free, -1 for flow control */
 uchar       usbCurrentTok;      /* last token received or endpoint number for last OUT token if != 0 */
@@ -615,7 +616,7 @@ USB_PUBLIC void usbInit(void)
 	PORTD.INT0MASK = PIN7_bm;
 	PORTD.INTCTRL = PORT_INT0LVL_HI_gc;
     usbResetDataToggling();
-	
+
 #if USB_CFG_HAVE_INTRIN_ENDPOINT && !USB_CFG_SUPPRESS_INTR_CODE
     usbTxLen1 = USBPID_NAK;
 #if USB_CFG_HAVE_INTRIN_ENDPOINT3

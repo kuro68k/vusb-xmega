@@ -27,6 +27,7 @@ static uchar    currentAddress;
 static uchar    bytesRemaining;
 static uint8_t buffer[64];
 
+extern void usbSendAndReti(void);
 
 int main(void)
 {

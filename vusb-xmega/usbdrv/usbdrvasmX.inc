@@ -99,15 +99,20 @@ haveTwoBitsK:
     push    x1              ;[1]
     push    x2              ;[3]
     push    x3              ;[5]
+nop ; xmega
+nop ; xmega
+nop ; xmega
     ldi     shift, 0        ;[7]
     ldi     x3, 1<<4        ;[8] [rx loop init] first sample is inverse bit, compensate that
     push    x4              ;[9] == leap
+nop ; xmega
 
     in      x1, USBIN       ;[11] <-- sample bit 0
     andi    x1, USBMASK     ;[12]
     bst     x1, USBMINUS    ;[13]
     bld     shift, 7        ;[14]
     push    cnt             ;[15]
+nop ; xmega
     ldi     leap, 0         ;[17] [rx loop init]
     ldi     cnt, USB_BUFSIZE;[18] [rx loop init]
     rjmp    rxbit1          ;[19] arrives at [21]
@@ -239,7 +244,7 @@ bitstuffN:
     nop                     ;[9]
     out     USBOUT, x1      ;[10] <-- out
     rjmp    didStuffN       ;[0]
-    
+
 bitstuff6:
     eor     x1, x4          ;[5]
     ldi     x2, 0           ;[6] Carry is zero due to brcc
@@ -257,9 +262,11 @@ sendNakAndReti:
 sendAckAndReti:
     ldi     cnt, USBPID_ACK ;[-17]
 sendCntAndReti:
-    mov     x3, cnt         ;[-16]
+;    mov     x3, cnt         ;[-16]
+	out		GPIO1, cnt
 sendX3AndReti:
-    ldi     YL, 20          ;[-15] x3==r20 address is 20
+;    ldi     YL, 20          ;[-15] x3==r20 address is 20
+    ldi     YL, 1           ;[-15] GPIO1 address is 1
     ldi     YH, 0           ;[-14]
     ldi     cnt, 2          ;[-13]
 ;   rjmp    usbSendAndReti      fallthrough
@@ -275,6 +282,7 @@ usbSendAndReti:             ; 12 cycles until SOP
     in      x2, USBDDR      ;[-12]
     ori     x2, USBMASK     ;[-11]
     sbi     USBOUT, USBMINUS;[-10] prepare idle state; D+ and D- must have been 0 (no pullups)
+nop ; xmega
     in      x1, USBOUT      ;[-8] port mirror for tx loop
     out     USBDDR, x2      ;[-7] <- acquire bus
 ; need not init x2 (bitstuff history) because sync starts with 0
@@ -313,11 +321,13 @@ didStuff7:
     out     USBOUT, x1      ;[-1][10] <-- out 7
     brcc    bitstuff7       ;[0] [11]
     ld      shift, y+       ;[1]
+;nop	; xmega ld is 1 cycle
     dec     cnt             ;[3]
     brne    txByteLoop      ;[4]
 ;make SE0:
     cbr     x1, USBMASK     ;[5] prepare SE0 [spec says EOP may be 21 to 25 cycles]
-    lds     x2, usbNewDeviceAddr;[6]
+;    lds     x2, usbNewDeviceAddr;[6]
+	lds		x2, GPIO0
     lsl     x2              ;[8] we compare with left shifted address
     subi    YL, 20 + 2      ;[9] Only assign address on data packets, not ACK/NAK in x3
     sbci    YH, 0           ;[10]
