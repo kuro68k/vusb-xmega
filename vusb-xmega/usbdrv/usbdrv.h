@@ -567,6 +567,21 @@ int usbDescriptorStringSerialNumber[];
 #define USBIDLE     (1<<USB_CFG_DMINUS_BIT) /* value representing J state */
 #define USBMASK     ((1<<USB_CFG_DPLUS_BIT) | (1<<USB_CFG_DMINUS_BIT))  /* mask for USB I/O bits */
 
+#ifdef XMEGA
+#ifndef USB_CFG_VPORTNAME
+#error "You must define USB_CFG_VPORTNAME in usbconfig.h"
+#endif
+#ifndef USB_CFG_GPIO0
+#error "You must define USB_CFG_GPIO0 in usbconfig.h"
+#endif
+#ifndef USB_CFG_GPIO1
+#error "You must define USB_CFG_GPIO1 in usbconfig.h"
+#endif
+#define	USBGPIO(name)	USB_CONCAT(GPIO, name)
+#define USBGPIO0		USBGPIO(USB_CFG_GPIO0)
+#define USBGPIO1		USBGPIO(USB_CFG_GPIO1)
+#endif /* XMEGA */
+
 /* defines for backward compatibility with older driver versions: */
 #define USB_CFG_IOPORT          USB_OUTPORT(USB_CFG_IOPORTNAME)
 #ifdef USB_CFG_PULLUP_IOPORTNAME

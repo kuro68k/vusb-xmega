@@ -263,10 +263,10 @@ sendAckAndReti:
     ldi     cnt, USBPID_ACK ;[-17]
 sendCntAndReti:
 ;    mov     x3, cnt         ;[-16]
-	out		GPIO1, cnt
+	out		USBGPIO1, cnt
 sendX3AndReti:
 ;    ldi     YL, 20          ;[-15] x3==r20 address is 20
-    ldi     YL, 1           ;[-15] GPIO1 address is 1
+    ldi     YL, USB_CFG_GPIO1  ;[-15] GPIO address is just GPIO number
     ldi     YH, 0           ;[-14]
     ldi     cnt, 2          ;[-13]
 ;   rjmp    usbSendAndReti      fallthrough
@@ -321,13 +321,12 @@ didStuff7:
     out     USBOUT, x1      ;[-1][10] <-- out 7
     brcc    bitstuff7       ;[0] [11]
     ld      shift, y+       ;[1]
-;nop	; xmega ld is 1 cycle
     dec     cnt             ;[3]
     brne    txByteLoop      ;[4]
 ;make SE0:
     cbr     x1, USBMASK     ;[5] prepare SE0 [spec says EOP may be 21 to 25 cycles]
 ;    lds     x2, usbNewDeviceAddr;[6]
-	lds		x2, GPIO0
+	lds		x2, USBGPIO0
     lsl     x2              ;[8] we compare with left shifted address
     subi    YL, 20 + 2      ;[9] Only assign address on data packets, not ACK/NAK in x3
     sbci    YH, 0           ;[10]
