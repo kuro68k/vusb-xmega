@@ -33,10 +33,11 @@ section at the end of this file).
 /* XMEGA only. Two GPIO registers are required, set their numbers here.
 */
 #define USB_CFG_IOPORTNAME      D
-#define USB_CFG_VPORTNAME		0
 /* This is the port where the USB bus is connected. When you configure it to
  * "B", the registers PORTB, PINB and DDRB will be used.
- * For XMEGA, a virtual port is also required and must be mapped by your
+*/
+#define USB_CFG_VPORTNAME		0
+/* For XMEGA, a virtual port is also required and must be mapped by your
  * application to the corresponding I/O port.
  */
 #define USB_CFG_DMINUS_BIT      6
